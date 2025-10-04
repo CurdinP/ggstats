@@ -1,238 +1,114 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gungame Punkte-Tracker</title>
-  <meta name="description" content="Punkteübersicht und Monatswertung für PepperonCini vs. CarryCoopSack" />
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#111827" />
-  <style>
-    :root{
-      --bg: #0b1020; --panel:#0f172a; --text:#e5e7eb; --muted:#9ca3af; --accent:#60a5fa; --border:#1f2937; --good:#22c55e; --bad:#ef4444;
-      --shadow: 0 8px 24px rgba(0,0,0,.35);
-    }
-    @media (prefers-color-scheme: light){
-      :root{ --bg:#f8fafc; --panel:#ffffff; --text:#111827; --muted:#4b5563; --accent:#2563eb; --border:#e5e7eb; --shadow:0 8px 24px rgba(0,0,0,.08) }
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
-    header{position:sticky;top:0;backdrop-filter:saturate(1.2) blur(8px);background:color-mix(in oklab, var(--bg) 85%, transparent);border-bottom:1px solid var(--border)}
-    .container{width:min(1100px,94%);margin-inline:auto}
-    .nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
-    h1{font-size:clamp(1.6rem,3.2vw,2.2rem);margin:.6rem 0}
-    .grid{display:grid;gap:1rem;grid-template-columns:repeat(12,1fr)}
-    .col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
-    @media (max-width:980px){.col-4,.col-6,.col-8{grid-column:span 12}}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1rem;box-shadow:var(--shadow)}
-    .muted{color:var(--muted)}
-    .row{display:flex;gap:.6rem;flex-wrap:wrap}
-    button,select,input[type="text"]{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;padding:.6rem .8rem}
-    button{cursor:pointer}
-    button.primary{background:var(--accent);color:#fff;border-color:transparent}
-    button.good{background:var(--good);color:#fff;border-color:transparent}
-    button.bad{background:var(--bad);color:#fff;border-color:transparent}
-    .score{font-size:1.8rem;font-weight:800}
-    .stack{display:grid;gap:.6rem}
-    .small{font-size:.9rem}
-    .table{width:100%;border-collapse:collapse}
-    .table td,.table th{border-top:1px solid var(--border);padding:.5rem .4rem;text-align:left}
-    .pill{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem;font-size:.85rem}
-    .right{justify-content:flex-end}
-    .wrap{white-space:normal}
-  </style>
-</head>
+<!doctype html><html lang="de"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GG-Tracker • TuttiFrutti vs. Pepperoncini</title>
+<style>
+:root{--bg:#0b1020;--fg:#e5e7eb;--mut:#9ca3af;--p:#0f172a;--b:#1f2937;--a:#60a5fa;--g:#22c55e;--r:#ef4444}
+@media(prefers-color-scheme:light){:root{--bg:#f8fafc;--fg:#111827;--mut:#4b5563;--p:#fff;--b:#e5e7eb;--a:#2563eb;--g:#16a34a;--r:#dc2626}}
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--fg)}
+header{position:sticky;top:0;background:rgba(0,0,0,.1);backdrop-filter:blur(6px);border-bottom:1px solid var(--b)}
+.wrap{max-width:980px;margin:auto;padding:10px}
+.h{display:flex;gap:8px;justify-content:space-between;align-items:center}
+.btn{border:1px solid var(--b);background:var(--p);color:var(--fg);border-radius:10px;padding:8px 10px;cursor:pointer}
+.primary{background:var(--a);border-color:transparent;color:#fff}.good{background:var(--g);border-color:transparent;color:#fff}.bad{background:var(--r);border-color:transparent;color:#fff}
+.grid{display:grid;gap:10px;grid-template-columns:2fr 1fr}
+.card{background:var(--p);border:1px solid var(--b);border-radius:14px;padding:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.score{font-size:28px;font-weight:800}
+.small{color:var(--mut);font-size:12px}
+.pill{border:1px solid var(--b);border-radius:999px;padding:2px 8px}
+.table{width:100%;border-collapse:collapse}.table td,.table th{border-top:1px solid var(--b);padding:6px 4px;text-align:left}
+#log{max-height:180px;overflow:auto}
+</style></head>
 <body>
-  <header>
-    <div class="container nav">
-      <div><strong>Gungame Punkte-Tracker</strong> <span class="muted">• PepperonCini vs. CarryCoopSack</span></div>
-      <div class="row right">
-        <button id="exportBtn">Export</button>
-        <button id="importBtn">Import</button>
-        <button id="resetAll" class="bad">Alles zurücksetzen</button>
+<header><div class="wrap h"><b>GG-Tracker</b><span class="small">TuttiFrutti vs. Pepperoncini</span><div class="row"><button id="export" class="btn">Export</button><button id="import" class="btn">Import</button><button id="wipe" class="btn bad">Reset</button></div></div></header>
+<main class="wrap">
+  <div class="grid">
+    <section class="card">
+      <h3>Tag</h3>
+      <div class="row small">
+        <label>Datum: <input id="dayLabel"/></label>
+        <label><input id="validDay" type="checkbox" checked> beide von Anfang an</label>
+        <label><input id="validTeams" type="checkbox" checked> Teamaufteilung gültig</label>
       </div>
-    </div>
-  </header>
-
-  <main class="container" id="app">
-    <section class="grid">
-      <div class="col-8 card">
-        <h2>Aktuelle Sitzung (Tag)</h2>
-        <div class="row">
-          <label class="pill">Datum: <input id="dayLabel" type="text" placeholder="z.B. 2025-10-04" /></label>
-          <label class="pill">Beide von Anfang an dabei? <input id="validDay" type="checkbox" checked></label>
-          <label class="pill">Teamaufteilung gültig? <input id="validTeams" type="checkbox" checked></label>
-        </div>
-        <div class="grid" style="margin-top:.6rem">
-          <div class="col-6">
-            <div class="card">
-              <div class="row" style="align-items:center;justify-content:space-between">
-                <div class="row wrap">
-                  <label class="pill">Spieler A: <input id="playerAName" type="text" value="PepperonCini"></label>
-                </div>
-                <div class="score" id="scoreA">0</div>
-              </div>
-              <div class="stack" style="margin-top:.6rem">
-                <button data-action="winKnifeRandom" data-player="A" class="primary">Sieg: Messer zufälliger Gegner (+1)</button>
-                <button data-action="winKnifeRival" data-player="A" class="primary">Sieg: Messer Rivalen (+2)</button>
-                <button data-action="winKnifeRivalGK" data-player="A">Sieg: Messer (direkter GK-Kampf) (+1)</button>
-                <button data-action="winKnifeBot" data-player="A" class="bad">Sieg: Messer BOT (−1)</button>
-                <button data-action="knifeMidgame" data-player="A">Messerung während Spiel (+1)</button>
-                <button data-action="doubleKill2nd" data-player="A">Direkter Doppelabschuss zweitletzte Stufe (+1)</button>
-                <button data-action="doubleKill2ndRival" data-player="A" class="good">… davon Rival dabei (+2)</button>
-                <button data-action="kicked" data-player="A" class="good">Von Randoms gekickt (+2)</button>
-                <button data-action="leftRound" data-player="A" class="bad">Laufende Runde verlassen (−1)</button>
-              </div>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card">
-              <div class="row" style="align-items:center;justify-content:space-between">
-                <div class="row wrap">
-                  <label class="pill">Spieler B: <input id="playerBName" type="text" value="CarryCoopSack"></label>
-                </div>
-                <div class="score" id="scoreB">0</div>
-              </div>
-              <div class="stack" style="margin-top:.6rem">
-                <button data-action="winKnifeRandom" data-player="B" class="primary">Sieg: Messer zufälliger Gegner (+1)</button>
-                <button data-action="winKnifeRival" data-player="B" class="primary">Sieg: Messer Rivalen (+2)</button>
-                <button data-action="winKnifeRivalGK" data-player="B">Sieg: Messer (direkter GK-Kampf) (+1)</button>
-                <button data-action="winKnifeBot" data-player="B" class="bad">Sieg: Messer BOT (−1)</button>
-                <button data-action="knifeMidgame" data-player="B">Messerung während Spiel (+1)</button>
-                <button data-action="doubleKill2nd" data-player="B">Direkter Doppelabschuss zweitletzte Stufe (+1)</button>
-                <button data-action="doubleKill2ndRival" data-player="B" class="good">… davon Rival dabei (+2)</button>
-                <button data-action="kicked" data-player="B" class="good">Von Randoms gekickt (+2)</button>
-                <button data-action="leftRound" data-player="B" class="bad">Laufende Runde verlassen (−1)</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row" style="margin-top:1rem;justify-content:space-between">
-          <button id="invalidateRound">Runde als ungültig markieren</button>
-          <div class="row">
-            <button id="endDay" class="primary">Tag prüfen & abschließen</button>
-            <button id="resetDay">Tag zurücksetzen</button>
-          </div>
-        </div>
-        <p class="muted small">Regel-Auszug: Tagessieg erst bei Differenz ≥ 2 Punkten. Bei Differenz &lt; 2 hat der Verlierer das Recht auf eine weitere Runde.</p>
-        <div id="log" class="card" style="margin-top:1rem;max-height:220px;overflow:auto"></div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <div><b>TuttiFrutti</b> <span id="sA" class="score">0</span></div>
+        <div><b>Pepperoncini</b> <span id="sB" class="score">0</span></div>
       </div>
-
-      <div class="col-4 card">
-        <h2>Monatswertung</h2>
-        <div class="row" style="align-items:center;justify-content:space-between">
-          <div class="stack">
-            <div><strong id="monthLabel"></strong></div>
-            <div class="small muted">Jeden abgeschlossenen Tag bekommt der Führende 1 Punkt.</div>
-          </div>
-          <div>
-            <button id="prevMonth">◀</button>
-            <button id="nextMonth">▶</button>
-          </div>
-        </div>
-        <table class="table" style="margin-top:.6rem">
-          <thead><tr><th>Spieler</th><th>Punkte</th></tr></thead>
-          <tbody>
-            <tr><td id="mAName">PepperonCini</td><td id="mAScore">0</td></tr>
-            <tr><td id="mBName">CarryCoopSack</td><td id="mBScore">0</td></tr>
-          </tbody>
-        </table>
-        <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
-        <div class="stack">
-          <button id="agentA" class="good">Agent! (7:0) → +3 Tagessiege für Spieler A</button>
-          <button id="agentB" class="good">Agent! (7:0) → +3 Tagessiege für Spieler B</button>
-        </div>
+      <div class="row" style="margin-top:6px">
+        <button data-p="A" data-a="r" class="btn primary">Messer Random +1</button>
+        <button data-p="A" data-a="rv" class="btn primary">Messer Rival +2</button>
+        <button data-p="A" data-a="gk" class="btn">Messer GK +1</button>
+        <button data-p="A" data-a="bot" class="btn bad">Messer BOT −1</button>
+        <button data-p="A" data-a="mid" class="btn">Messerung +1</button>
+        <button data-p="A" data-a="kick" class="btn good">Gekickt +2</button>
+        <button data-p="A" data-a="leave" class="btn bad">Verlassen −1</button>
       </div>
+      <div class="row" style="margin-top:4px">
+        <button data-p="B" data-a="r" class="btn primary">Messer Random +1</button>
+        <button data-p="B" data-a="rv" class="btn primary">Messer Rival +2</button>
+        <button data-p="B" data-a="gk" class="btn">Messer GK +1</button>
+        <button data-p="B" data-a="bot" class="btn bad">Messer BOT −1</button>
+        <button data-p="B" data-a="mid" class="btn">Messerung +1</button>
+        <button data-p="B" data-a="kick" class="btn good">Gekickt +2</button>
+        <button data-p="B" data-a="leave" class="btn bad">Verlassen −1</button>
+      </div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">
+        <button id="invalidate" class="btn">Runde ungültig</button>
+        <div class="row"><button id="end" class="btn primary">Tag abschließen</button><button id="resetDay" class="btn">Tag zurücksetzen</button></div>
+      </div>
+      <p class="small">Regel: Tagessieg nur bei Differenz ≥ 2. Jeder gültige Tagessieg → +2 CHF.</p>
+      <div id="log" class="card small"></div>
+      <div class="card" style="margin-top:8px"><h4 style="margin:0 0 6px 0">Offene Einträge (beide bestätigen)</h4><div id="pending" class="row" style="flex-direction:column;align-items:stretch;gap:6px"></div></div>
     </section>
-
-    <section class="card" style="margin-top:1rem">
-      <h2>Regeln (Kurzfassung)</h2>
-      <ul class="small">
-        <li>Sieg Messer zufälliger Gegner: +1</li>
-        <li>Sieg Messer Rivalen: +2 (direkter GK-Kampf: +1)</li>
-        <li>Sieg Messer BOT: −1</li>
-        <li>Messerung während laufendem Gungame (zwischen Rivalen): +1</li>
-        <li>Direkter Doppelabschuss auf zweithöchster Stufe: +1 (wenn Rival darin: +2)</li>
-        <li>Von Randoms gekickt: +2 (für den Gekickten)</li>
-        <li>Beide im selben Team → Runde ungültig</li>
-        <li>Runde verlassen: −1</li>
-        <li>Tagessieg: Differenz ≥ 2 → Monatswertung +1 für Führenden</li>
-        <li>Agent (Domination 7:0): +3 Tagessiege</li>
-      </ul>
-      <p class="muted small">Diese App speichert lokal im Browser (LocalStorage). Export/Import für Backups verfügbar.</p>
-    </section>
-  </main>
-
-  <script>
-  const $ = (s) => document.querySelector(s);
-  const log = (msg) => { const el = document.createElement('div'); el.textContent = new Date().toLocaleTimeString() + ' — ' + msg; $('#log').prepend(el); };
-
-  const state = {
-    monthOffset: 0, // 0 = aktueller Monat
-    months: {}, // key: YYYY-MM, value: { A: n, B: n }
-    day: { A:0, B:0, valid:true, validTeams:true, label: new Date().toISOString().slice(0,10) },
-    names: { A:'PepperonCini', B:'CarryCoopSack' }
-  };
-
-  const save = () => localStorage.setItem('ggstats', JSON.stringify(state));
-  const load = () => { const raw = localStorage.getItem('ggstats'); if(raw){ try{ const d = JSON.parse(raw); Object.assign(state, d);}catch(e){} } };
-
-  function currentMonthKey(){ const d = new Date(); d.setMonth(d.getMonth()+state.monthOffset); return d.toISOString().slice(0,7); }
-  function ensureMonth(){ const k = currentMonthKey(); if(!state.months[k]) state.months[k] = {A:0,B:0}; return k; }
-
-  function render(){
-    $('#playerAName').value = state.names.A; $('#playerBName').value = state.names.B;
-    $('#mAName').textContent = state.names.A; $('#mBName').textContent = state.names.B;
-    $('#scoreA').textContent = state.day.A; $('#scoreB').textContent = state.day.B;
-    $('#dayLabel').value = state.day.label; $('#validDay').checked = state.day.valid; $('#validTeams').checked = state.day.validTeams;
-    const k = ensureMonth(); $('#monthLabel').textContent = k; $('#mAScore').textContent = state.months[k].A; $('#mBScore').textContent = state.months[k].B;
-  }
-
-  function addPoints(player, delta, reason){ state.day[player]+=delta; save(); render(); log(`${state.names[player]} ${delta>=0?'+':''}${delta} — ${reason}`); }
-
-  function endDay(){
-    if(!state.day.valid || !state.day.validTeams){ log('Tag als ungültig markiert – kein Eintrag in Monatswertung.'); state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); return; }
-    const diff = Math.abs(state.day.A - state.day.B);
-    if(diff < 2){ alert('Differenz < 2. Laut Regel darf der Verlierer eine weitere Runde einfordern.'); return; }
-    const k = ensureMonth(); const winner = state.day.A > state.day.B ? 'A' : 'B';
-    state.months[k][winner] += 1; log(`Tag abgeschlossen → Monats-Punkt für ${state.names[winner]}`);
-    state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); }
-
-  function agent(player){ const k = ensureMonth(); state.months[k][player]+=3; save(); render(); log(`Agent! (7:0) → +3 Tagessiege für ${state.names[player]}`); }
-
-  function exportData(){ const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='ggstats_backup.json'; a.click(); URL.revokeObjectURL(url); }
-  function importData(){ const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange = () => { const file = inp.files?.[0]; if(!file) return; const fr = new FileReader(); fr.onload = () => { try{ const d = JSON.parse(fr.result); Object.assign(state,d); save(); render(); log('Import erfolgreich.'); }catch(e){ alert('Import fehlgeschlagen.'); } }; fr.readAsText(file); }; inp.click(); }
-
-  // Wire UI
-  document.addEventListener('click', (e)=>{
-    const t = e.target.closest('button'); if(!t) return; const act = t.getAttribute('data-action');
-    if(!act) return;
-    const p = t.getAttribute('data-player');
-    if(act==='winKnifeRandom') addPoints(p, +1, 'Sieg: Messer zufälliger Gegner');
-    if(act==='winKnifeRival') addPoints(p, +2, 'Sieg: Messer Rivalen');
-    if(act==='winKnifeRivalGK') addPoints(p, +1, 'Sieg: Messer (direkter GK-Kampf)');
-    if(act==='winKnifeBot') addPoints(p, -1, 'Sieg: Messer BOT');
-    if(act==='knifeMidgame') addPoints(p, +1, 'Messerung während Spiel');
-    if(act==='doubleKill2nd') addPoints(p, +1, 'Direkter Doppelabschuss auf zweithöchster Stufe');
-    if(act==='doubleKill2ndRival') addPoints(p, +2, 'Direkter Doppelabschuss – Rival inkludiert');
-    if(act==='kicked') addPoints(p, +2, 'Von Randoms gekickt');
-    if(act==='leftRound') addPoints(p, -1, 'Laufende Runde verlassen');
-  });
-
-  $('#endDay').onclick = endDay;
-  $('#resetDay').onclick = ()=>{ state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); log('Tag zurückgesetzt.'); };
-  $('#invalidateRound').onclick = ()=>{ state.day.valid = false; save(); render(); log('Runde als ungültig markiert.'); };
-  $('#prevMonth').onclick = ()=>{ state.monthOffset--; render(); };
-  $('#nextMonth').onclick = ()=>{ state.monthOffset++; render(); };
-  $('#agentA').onclick = ()=>agent('A'); $('#agentB').onclick = ()=>agent('B');
-  $('#exportBtn').onclick = exportData; $('#importBtn').onclick = importData; $('#resetAll').onclick = ()=>{ if(confirm('Alles löschen?')){ localStorage.removeItem('ggstats'); location.reload(); } };
-  $('#playerAName').addEventListener('input', e=>{ state.names.A = e.target.value||'Spieler A'; save(); render(); });
-  $('#playerBName').addEventListener('input', e=>{ state.names.B = e.target.value||'Spieler B'; save(); render(); });
-  $('#dayLabel').addEventListener('input', e=>{ state.day.label = e.target.value; save(); });
-  $('#validDay').addEventListener('change', e=>{ state.day.valid = e.target.checked; save(); });
-  $('#validTeams').addEventListener('change', e=>{ state.day.validTeams = e.target.checked; save(); });
-
-  load(); ensureMonth(); render();
-  </script>
-</body>
-</html>
+    <aside class="card">
+      <h3>Guthaben</h3>
+      <table class="table"><tbody>
+        <tr><td>TuttiFrutti</td><td id="balA">0.00 CHF</td></tr>
+        <tr><td>Pepperoncini</td><td id="balB">0.00 CHF</td></tr>
+      </tbody></table>
+      <p class="small">Lokal gespeichert. Export/Import für Backups.</p>
+    </aside>
+  </div>
+</main>
+<script>
+const $=s=>document.querySelector(s), log=m=>{const d=document.createElement('div');d.textContent=new Date().toLocaleTimeString()+' — '+m;$('#log').prepend(d)};
+const state={day:{A:0,B:0,valid:true,teams:true,label:new Date().toISOString().slice(0,10)},bal:{A:0,B:0},q:[]};
+const save=_=>localStorage.setItem('ggstats',JSON.stringify(state));
+const load=_=>{try{Object.assign(state,JSON.parse(localStorage.getItem('ggstats')||'{}'))}catch{}}
+const deltaByAct=a=>({r:1,rv:2,gk:1,bot:-1,mid:1,kick:2,leave:-1}[a]||0);
+function render(){
+  $('#sA').textContent=state.day.A; $('#sB').textContent=state.day.B;
+  $('#balA').textContent=state.bal.A.toFixed(2)+' CHF'; $('#balB').textContent=state.bal.B.toFixed(2)+' CHF';
+  $('#dayLabel').value=state.day.label; $('#validDay').checked=state.day.valid; $('#validTeams').checked=state.day.teams;
+  const box=$('#pending'); box.innerHTML='';
+  state.q.forEach(it=>{const row=document.createElement('div');row.className='row';row.style.justifyContent='space-between';
+    const txt=document.createElement('div'); txt.textContent=`${it.reason} (${it.d>=0?'+':''}${it.d}) → ${it.p==='A'?'TuttiFrutti':'Pepperoncini'}`;
+    const act=document.createElement('div'); act.className='row';
+    const bA=btn('TuttiFrutti',_=>conf(it,'A'),it.c.A); const bB=btn('Pepperoncini',_=>conf(it,'B'),it.c.B);
+    const del=btn('verwerfen',_=>drop(it),false,'bad'); act.append(bA,bB,del);
+    row.append(txt,act); box.append(row);
+    if(it.c.A&&it.c.B){apply(it)}
+  })
+}
+const btn=(t,fn,dis,cls='')=>{const b=document.createElement('button'); b.className='btn '+cls; b.textContent=dis?t+' ✓':t+' bestätigen'; b.disabled=!!dis; b.onclick=fn; return b};
+function add(p,d,reason){state.q.push({id:Math.random().toString(36).slice(2),p,d,reason,c:{A:false,B:false}}); save(); render(); log(`Neu: ${reason} → ${p==='A'?'TuttiFrutti':'Pepperoncini'} ${d>=0?'+':''}${d}`)}
+const conf=(it,who)=>{it.c[who]=true; save(); render()};
+const drop=it=>{state.q=state.q.filter(x=>x.id!==it.id); save(); render(); log('Eintrag verworfen.')};
+const apply=it=>{state.day[it.p]+=it.d; state.q=state.q.filter(x=>x.id!==it.id); save(); render(); log(`Bestätigt: ${it.reason}`)};
+function endDay(){
+  if(state.q.length) return alert('Offene Einträge zuerst bestätigen.');
+  if(!state.day.valid||!state.day.teams){ log('Tag ungültig – kein Guthaben.'); resetDay(); return }
+  const diff=Math.abs(state.day.A-state.day.B); if(diff<2) return alert('Differenz < 2. Verlierer darf weitere Runde einfordern.');
+  const w=state.day.A>state.day.B?'A':'B'; state.bal[w]+=2; log(`Tag abgeschlossen → +2 CHF für ${w==='A'?'TuttiFrutti':'Pepperoncini'}`); resetDay()
+}
+function resetDay(){state.day={A:0,B:0,valid:true,teams:true,label:new Date().toISOString().slice(0,10)}; save(); render(); log('Tag zurückgesetzt.')}
+// wire
+load(); render();
+addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; const a=b.dataset.a,p=b.dataset.p; if(!a) return; add(p,deltaByAct(a),label(a))});
+$('#end').onclick=endDay; $('#resetDay').onclick=resetDay; $('#invalidate').onclick=_=>{state.day.valid=false; save(); render(); log('Runde ungültig markiert.')}
+$('#export').onclick=_=>{const u=URL.createObjectURL(new Blob([JSON.stringify(state)],{type:'application/json'})); const a=document.createElement('a'); a.href=u; a.download='ggstats.json'; a.click(); URL.revokeObjectURL(u)}
+$('#import').onclick=_=>{const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=_=>{const f=i.files[0]; if(!f) return; const r=new FileReader(); r.onload=_=>{try{Object.assign(state,JSON.parse(r.result)); save(); render(); log('Import erfolgreich.')}catch{alert('Import fehlgeschlagen.')}}; r.readAsText(f)}; i.click()}
+$('#wipe').onclick=_=>{if(confirm('Alle Daten löschen?')){localStorage.removeItem('ggstats'); location.reload()}}
+$('#dayLabel').oninput=e=>{state.day.label=e.target.value; save()}; $('#validDay').onchange=e=>{state.day.valid=e.target.checked; save()}; $('#validTeams').onchange=e=>{state.day.teams=e.target.checked; save()}
+function label(a){return{r:'Messer Random',rv:'Messer Rival',gk:'Messer GK',bot:'Messer BOT',mid:'Messerung',kick:'Gekickt',leave:'Verlassen'}[a]||'Aktion'}
+</script>
+</body></html>
