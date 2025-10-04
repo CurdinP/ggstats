@@ -3,207 +3,236 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mein Projekt • Startseite</title>
-  <meta name="description" content="Kurzbeschreibung deiner Seite oder deines Projekts." />
+  <title>Gungame Punkte-Tracker</title>
+  <meta name="description" content="Punkteübersicht und Monatswertung für PepperonCini vs. CarryCoopSack" />
   <meta name="color-scheme" content="light dark">
-  <!-- Social / SEO (optional) -->
-  <meta property="og:title" content="Mein Projekt" />
-  <meta property="og:description" content="Kurzbeschreibung deiner Seite oder deines Projekts." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="" />
   <meta name="theme-color" content="#111827" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23111827'/%3E%3Ctext x='50' y='58' font-size='50' text-anchor='middle' fill='%23fff' font-family='Arial,Helvetica,sans-serif'%3EM%3C/text%3E%3C/svg%3E" />
-
   <style>
     :root{
-      --bg: #0b1020;
-      --bg-soft: #111827;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #60a5fa;
-      --card: #0f172a;
-      --border: #1f2937;
-      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --bg: #0b1020; --panel:#0f172a; --text:#e5e7eb; --muted:#9ca3af; --accent:#60a5fa; --border:#1f2937; --good:#22c55e; --bad:#ef4444;
+      --shadow: 0 8px 24px rgba(0,0,0,.35);
     }
     @media (prefers-color-scheme: light){
-      :root{
-        --bg: #f8fafc;
-        --bg-soft: #ffffff;
-        --text: #111827;
-        --muted: #4b5563;
-        --accent: #2563eb;
-        --card: #ffffff;
-        --border: #e5e7eb;
-        --shadow: 0 10px 25px rgba(0,0,0,.08);
-      }
+      :root{ --bg:#f8fafc; --panel:#ffffff; --text:#111827; --muted:#4b5563; --accent:#2563eb; --border:#e5e7eb; --shadow:0 8px 24px rgba(0,0,0,.08) }
     }
-
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-      background: var(--bg); color: var(--text);
-      line-height:1.6;
-    }
-
-    /* Layout */
-    .container{ width:min(1100px, 92%); margin-inline:auto; }
-    header{ position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.4) blur(8px); background: color-mix(in oklab, var(--bg-soft) 70%, transparent); border-bottom:1px solid var(--border); }
-    .nav{ display:flex; align-items:center; justify-content:space-between; padding: .9rem 0; }
-    .brand{ font-weight:700; letter-spacing:.3px; }
-    .brand a{ color:inherit; text-decoration:none }
-    nav ul{ list-style:none; display:flex; gap:1rem; padding:0; margin:0 }
-    nav a{ color:var(--muted); text-decoration:none; font-weight:500 }
-    nav a:hover, nav a:focus{ color:var(--text) }
-
-    .menu-btn{ display:none; background:none; border:1px solid var(--border); border-radius:10px; padding:.5rem .7rem; color:var(--text) }
-    @media (max-width: 720px){
-      nav ul{ display:none }
-      .menu-btn{ display:inline-flex }
-      .mobile{ display:none; position:absolute; left:0; right:0; top:100%; background:var(--bg-soft); border-bottom:1px solid var(--border) }
-      .mobile a{ display:block; padding:1rem 1.2rem; border-top:1px solid var(--border) }
-    }
-
-    /* Hero */
-    .hero{ padding:6rem 0 4rem; }
-    .hero .title{ font-size: clamp(2rem, 5vw, 3.2rem); line-height:1.1; margin:0 0 .6rem }
-    .hero .subtitle{ color:var(--muted); font-size: clamp(1.05rem, 2.5vw, 1.25rem); margin:0 0 1.4rem }
-    .cta{ display:inline-flex; align-items:center; gap:.6rem; background:var(--accent); color:#fff; border:none; border-radius:14px; padding:.85rem 1.1rem; font-weight:700; text-decoration:none; box-shadow: var(--shadow) }
-    .cta:focus{ outline:2px solid #fff; outline-offset:3px }
-    .ghost{ background:transparent; color:var(--text); border:1px solid var(--border); box-shadow:none }
-
-    /* Cards */
-    .grid{ display:grid; gap:1.2rem; grid-template-columns: repeat(12, 1fr) }
-    .col-4{ grid-column: span 4 }
-    .col-6{ grid-column: span 6 }
-    .col-12{ grid-column: span 12 }
-    @media (max-width:980px){ .col-4,.col-6{ grid-column: span 6 } }
-    @media (max-width:640px){ .col-4,.col-6{ grid-column: span 12 } }
-    .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:1.2rem 1.2rem; box-shadow: var(--shadow); }
-    .card h3{ margin-top:0 }
-    .muted{ color:var(--muted) }
-
-    section{ padding:3rem 0 }
-    section h2{ margin:0 0 1rem; font-size: clamp(1.4rem, 3.4vw, 2rem) }
-    .spacer{ height:1.5rem }
-
-    /* Footer */
-    footer{ border-top:1px solid var(--border); background:var(--bg-soft); padding:2rem 0; color:var(--muted) }
-    footer a{ color:inherit }
-    .small{ font-size:.95rem }
-
-    /* Utilities */
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
-    .center{ display:flex; align-items:center; gap:.6rem; }
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+    header{position:sticky;top:0;backdrop-filter:saturate(1.2) blur(8px);background:color-mix(in oklab, var(--bg) 85%, transparent);border-bottom:1px solid var(--border)}
+    .container{width:min(1100px,94%);margin-inline:auto}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:.9rem 0}
+    h1{font-size:clamp(1.6rem,3.2vw,2.2rem);margin:.6rem 0}
+    .grid{display:grid;gap:1rem;grid-template-columns:repeat(12,1fr)}
+    .col-4{grid-column:span 4}.col-6{grid-column:span 6}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    @media (max-width:980px){.col-4,.col-6,.col-8{grid-column:span 12}}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:1rem;box-shadow:var(--shadow)}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:.6rem;flex-wrap:wrap}
+    button,select,input[type="text"]{border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:12px;padding:.6rem .8rem}
+    button{cursor:pointer}
+    button.primary{background:var(--accent);color:#fff;border-color:transparent}
+    button.good{background:var(--good);color:#fff;border-color:transparent}
+    button.bad{background:var(--bad);color:#fff;border-color:transparent}
+    .score{font-size:1.8rem;font-weight:800}
+    .stack{display:grid;gap:.6rem}
+    .small{font-size:.9rem}
+    .table{width:100%;border-collapse:collapse}
+    .table td,.table th{border-top:1px solid var(--border);padding:.5rem .4rem;text-align:left}
+    .pill{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem;font-size:.85rem}
+    .right{justify-content:flex-end}
+    .wrap{white-space:normal}
   </style>
 </head>
 <body>
-  <a class="sr-only" href="#main">Zum Inhalt springen</a>
   <header>
     <div class="container nav">
-      <div class="brand"><a href="#">Mein Projekt</a></div>
-      <nav aria-label="Primär">
-        <button class="menu-btn" aria-expanded="false" aria-controls="mobileNav" id="menuBtn">Menü</button>
-        <ul class="desktop">
-          <li><a href="#about">Über mich</a></li>
-          <li><a href="#work">Projekte</a></li>
-          <li><a href="#contact">Kontakt</a></li>
-        </ul>
-        <div class="mobile" id="mobileNav" hidden>
-          <a href="#about">Über mich</a>
-          <a href="#work">Projekte</a>
-          <a href="#contact">Kontakt</a>
-        </div>
-      </nav>
+      <div><strong>Gungame Punkte-Tracker</strong> <span class="muted">• PepperonCini vs. CarryCoopSack</span></div>
+      <div class="row right">
+        <button id="exportBtn">Export</button>
+        <button id="importBtn">Import</button>
+        <button id="resetAll" class="bad">Alles zurücksetzen</button>
+      </div>
     </div>
   </header>
 
-  <main id="main">
-    <section class="hero container">
-      <h1 class="title">Hallo, ich bin <span style="white-space:nowrap">[Dein&nbsp;Name]</span> ✌️</h1>
-      <p class="subtitle">Kurzer Satz, was du tust oder anbietest. Z. B. Holzbau-Ingenieur, Automatisierung, oder Software-Projekte.</p>
-      <div class="center" style="margin-top:1rem">
-        <a class="cta" href="#contact">Kontakt aufnehmen</a>
-        <a class="cta ghost" href="#work" aria-label="Zu Projekten springen">Meine Projekte</a>
+  <main class="container" id="app">
+    <section class="grid">
+      <div class="col-8 card">
+        <h2>Aktuelle Sitzung (Tag)</h2>
+        <div class="row">
+          <label class="pill">Datum: <input id="dayLabel" type="text" placeholder="z.B. 2025-10-04" /></label>
+          <label class="pill">Beide von Anfang an dabei? <input id="validDay" type="checkbox" checked></label>
+          <label class="pill">Teamaufteilung gültig? <input id="validTeams" type="checkbox" checked></label>
+        </div>
+        <div class="grid" style="margin-top:.6rem">
+          <div class="col-6">
+            <div class="card">
+              <div class="row" style="align-items:center;justify-content:space-between">
+                <div class="row wrap">
+                  <label class="pill">Spieler A: <input id="playerAName" type="text" value="PepperonCini"></label>
+                </div>
+                <div class="score" id="scoreA">0</div>
+              </div>
+              <div class="stack" style="margin-top:.6rem">
+                <button data-action="winKnifeRandom" data-player="A" class="primary">Sieg: Messer zufälliger Gegner (+1)</button>
+                <button data-action="winKnifeRival" data-player="A" class="primary">Sieg: Messer Rivalen (+2)</button>
+                <button data-action="winKnifeRivalGK" data-player="A">Sieg: Messer (direkter GK-Kampf) (+1)</button>
+                <button data-action="winKnifeBot" data-player="A" class="bad">Sieg: Messer BOT (−1)</button>
+                <button data-action="knifeMidgame" data-player="A">Messerung während Spiel (+1)</button>
+                <button data-action="doubleKill2nd" data-player="A">Direkter Doppelabschuss zweitletzte Stufe (+1)</button>
+                <button data-action="doubleKill2ndRival" data-player="A" class="good">… davon Rival dabei (+2)</button>
+                <button data-action="kicked" data-player="A" class="good">Von Randoms gekickt (+2)</button>
+                <button data-action="leftRound" data-player="A" class="bad">Laufende Runde verlassen (−1)</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card">
+              <div class="row" style="align-items:center;justify-content:space-between">
+                <div class="row wrap">
+                  <label class="pill">Spieler B: <input id="playerBName" type="text" value="CarryCoopSack"></label>
+                </div>
+                <div class="score" id="scoreB">0</div>
+              </div>
+              <div class="stack" style="margin-top:.6rem">
+                <button data-action="winKnifeRandom" data-player="B" class="primary">Sieg: Messer zufälliger Gegner (+1)</button>
+                <button data-action="winKnifeRival" data-player="B" class="primary">Sieg: Messer Rivalen (+2)</button>
+                <button data-action="winKnifeRivalGK" data-player="B">Sieg: Messer (direkter GK-Kampf) (+1)</button>
+                <button data-action="winKnifeBot" data-player="B" class="bad">Sieg: Messer BOT (−1)</button>
+                <button data-action="knifeMidgame" data-player="B">Messerung während Spiel (+1)</button>
+                <button data-action="doubleKill2nd" data-player="B">Direkter Doppelabschuss zweitletzte Stufe (+1)</button>
+                <button data-action="doubleKill2ndRival" data-player="B" class="good">… davon Rival dabei (+2)</button>
+                <button data-action="kicked" data-player="B" class="good">Von Randoms gekickt (+2)</button>
+                <button data-action="leftRound" data-player="B" class="bad">Laufende Runde verlassen (−1)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:1rem;justify-content:space-between">
+          <button id="invalidateRound">Runde als ungültig markieren</button>
+          <div class="row">
+            <button id="endDay" class="primary">Tag prüfen & abschließen</button>
+            <button id="resetDay">Tag zurücksetzen</button>
+          </div>
+        </div>
+        <p class="muted small">Regel-Auszug: Tagessieg erst bei Differenz ≥ 2 Punkten. Bei Differenz &lt; 2 hat der Verlierer das Recht auf eine weitere Runde.</p>
+        <div id="log" class="card" style="margin-top:1rem;max-height:220px;overflow:auto"></div>
+      </div>
+
+      <div class="col-4 card">
+        <h2>Monatswertung</h2>
+        <div class="row" style="align-items:center;justify-content:space-between">
+          <div class="stack">
+            <div><strong id="monthLabel"></strong></div>
+            <div class="small muted">Jeden abgeschlossenen Tag bekommt der Führende 1 Punkt.</div>
+          </div>
+          <div>
+            <button id="prevMonth">◀</button>
+            <button id="nextMonth">▶</button>
+          </div>
+        </div>
+        <table class="table" style="margin-top:.6rem">
+          <thead><tr><th>Spieler</th><th>Punkte</th></tr></thead>
+          <tbody>
+            <tr><td id="mAName">PepperonCini</td><td id="mAScore">0</td></tr>
+            <tr><td id="mBName">CarryCoopSack</td><td id="mBScore">0</td></tr>
+          </tbody>
+        </table>
+        <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+        <div class="stack">
+          <button id="agentA" class="good">Agent! (7:0) → +3 Tagessiege für Spieler A</button>
+          <button id="agentB" class="good">Agent! (7:0) → +3 Tagessiege für Spieler B</button>
+        </div>
       </div>
     </section>
 
-    <section id="about">
-      <div class="container grid">
-        <div class="col-6 card">
-          <h2>Über mich</h2>
-          <p>Schreibe einen kurzen Absatz über dich. Was ist deine Erfahrung, dein Fokus und woran arbeitest du gerade?</p>
-          <p class="muted small">Tipp: Halte es prägnant. Verlinke auf <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a> oder <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>.</p>
-        </div>
-        <div class="col-6 card">
-          <h2>Fähigkeiten</h2>
-          <ul>
-            <li>🪵 Holzbau / Tragwerksplanung</li>
-            <li>🤖 Automatisierung / Robotik</li>
-            <li>💻 Python / Daten / RAG</li>
-            <li>🔧 Prototyping / Werkstatt</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="work">
-      <div class="container">
-        <h2>Projekte</h2>
-        <div class="grid">
-          <article class="col-4 card">
-            <h3>Projekt A</h3>
-            <p class="muted">Kurze Beschreibung deines Projekts, was es löst, Tech-Stack oder Besonderheiten.</p>
-            <p><a href="#" target="_blank" rel="noopener">Mehr erfahren →</a></p>
-          </article>
-          <article class="col-4 card">
-            <h3>Projekt B</h3>
-            <p class="muted">Noch ein Projekt. Verlinke auf ein Repo, eine Demo oder einen Blogpost.</p>
-            <p><a href="#" target="_blank" rel="noopener">Mehr erfahren →</a></p>
-          </article>
-          <article class="col-4 card">
-            <h3>Projekt C</h3>
-            <p class="muted">Beschreibung. Gerne auch Bilder einfügen (siehe Kommentar im Code).</p>
-            <p><a href="#" target="_blank" rel="noopener">Mehr erfahren →</a></p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact">
-      <div class="container card">
-        <h2>Kontakt</h2>
-        <p>Am schnellsten erreichst du mich per E‑Mail.</p>
-        <p><a class="cta" href="mailto:dein.name@example.com">E‑Mail senden</a></p>
-        <p class="muted small">Oder vernetze dich auf <a href="https://github.com/CarryCoop" target="_blank" rel="noopener">GitHub</a>.</p>
-      </div>
+    <section class="card" style="margin-top:1rem">
+      <h2>Regeln (Kurzfassung)</h2>
+      <ul class="small">
+        <li>Sieg Messer zufälliger Gegner: +1</li>
+        <li>Sieg Messer Rivalen: +2 (direkter GK-Kampf: +1)</li>
+        <li>Sieg Messer BOT: −1</li>
+        <li>Messerung während laufendem Gungame (zwischen Rivalen): +1</li>
+        <li>Direkter Doppelabschuss auf zweithöchster Stufe: +1 (wenn Rival darin: +2)</li>
+        <li>Von Randoms gekickt: +2 (für den Gekickten)</li>
+        <li>Beide im selben Team → Runde ungültig</li>
+        <li>Runde verlassen: −1</li>
+        <li>Tagessieg: Differenz ≥ 2 → Monatswertung +1 für Führenden</li>
+        <li>Agent (Domination 7:0): +3 Tagessiege</li>
+      </ul>
+      <p class="muted small">Diese App speichert lokal im Browser (LocalStorage). Export/Import für Backups verfügbar.</p>
     </section>
   </main>
-jj
-  <footer>
-    <div class="container">
-      <div>© <span id="year"></span> Dein Name. Alle Rechte vorbehalten.</div>
-    </div>
-  </footer>
 
   <script>
-    // Jahr im Footer aktualisieren
-    document.getElementById('year').textContent = new Date().getFullYear();
+  const $ = (s) => document.querySelector(s);
+  const log = (msg) => { const el = document.createElement('div'); el.textContent = new Date().toLocaleTimeString() + ' — ' + msg; $('#log').prepend(el); };
 
-    // Mobile Navigation
-    const btn = document.getElementById('menuBtn');
-    const mobile = document.getElementById('mobileNav');
-    btn?.addEventListener('click', () => {
-      const open = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!open));
-      if (mobile) {
-        mobile.hidden = open; // toggle hidden attribute
-        mobile.style.display = open ? 'none' : 'block';
-      }
-    });
+  const state = {
+    monthOffset: 0, // 0 = aktueller Monat
+    months: {}, // key: YYYY-MM, value: { A: n, B: n }
+    day: { A:0, B:0, valid:true, validTeams:true, label: new Date().toISOString().slice(0,10) },
+    names: { A:'PepperonCini', B:'CarryCoopSack' }
+  };
 
-    // Beispiel: Bilder einfügen
-    // <img src="assets/projekt-a.jpg" alt="Beschreibung" style="width:100%; border-radius:12px; margin:.6rem 0"> 
+  const save = () => localStorage.setItem('ggstats', JSON.stringify(state));
+  const load = () => { const raw = localStorage.getItem('ggstats'); if(raw){ try{ const d = JSON.parse(raw); Object.assign(state, d);}catch(e){} } };
+
+  function currentMonthKey(){ const d = new Date(); d.setMonth(d.getMonth()+state.monthOffset); return d.toISOString().slice(0,7); }
+  function ensureMonth(){ const k = currentMonthKey(); if(!state.months[k]) state.months[k] = {A:0,B:0}; return k; }
+
+  function render(){
+    $('#playerAName').value = state.names.A; $('#playerBName').value = state.names.B;
+    $('#mAName').textContent = state.names.A; $('#mBName').textContent = state.names.B;
+    $('#scoreA').textContent = state.day.A; $('#scoreB').textContent = state.day.B;
+    $('#dayLabel').value = state.day.label; $('#validDay').checked = state.day.valid; $('#validTeams').checked = state.day.validTeams;
+    const k = ensureMonth(); $('#monthLabel').textContent = k; $('#mAScore').textContent = state.months[k].A; $('#mBScore').textContent = state.months[k].B;
+  }
+
+  function addPoints(player, delta, reason){ state.day[player]+=delta; save(); render(); log(`${state.names[player]} ${delta>=0?'+':''}${delta} — ${reason}`); }
+
+  function endDay(){
+    if(!state.day.valid || !state.day.validTeams){ log('Tag als ungültig markiert – kein Eintrag in Monatswertung.'); state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); return; }
+    const diff = Math.abs(state.day.A - state.day.B);
+    if(diff < 2){ alert('Differenz < 2. Laut Regel darf der Verlierer eine weitere Runde einfordern.'); return; }
+    const k = ensureMonth(); const winner = state.day.A > state.day.B ? 'A' : 'B';
+    state.months[k][winner] += 1; log(`Tag abgeschlossen → Monats-Punkt für ${state.names[winner]}`);
+    state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); }
+
+  function agent(player){ const k = ensureMonth(); state.months[k][player]+=3; save(); render(); log(`Agent! (7:0) → +3 Tagessiege für ${state.names[player]}`); }
+
+  function exportData(){ const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='ggstats_backup.json'; a.click(); URL.revokeObjectURL(url); }
+  function importData(){ const inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange = () => { const file = inp.files?.[0]; if(!file) return; const fr = new FileReader(); fr.onload = () => { try{ const d = JSON.parse(fr.result); Object.assign(state,d); save(); render(); log('Import erfolgreich.'); }catch(e){ alert('Import fehlgeschlagen.'); } }; fr.readAsText(file); }; inp.click(); }
+
+  // Wire UI
+  document.addEventListener('click', (e)=>{
+    const t = e.target.closest('button'); if(!t) return; const act = t.getAttribute('data-action');
+    if(!act) return;
+    const p = t.getAttribute('data-player');
+    if(act==='winKnifeRandom') addPoints(p, +1, 'Sieg: Messer zufälliger Gegner');
+    if(act==='winKnifeRival') addPoints(p, +2, 'Sieg: Messer Rivalen');
+    if(act==='winKnifeRivalGK') addPoints(p, +1, 'Sieg: Messer (direkter GK-Kampf)');
+    if(act==='winKnifeBot') addPoints(p, -1, 'Sieg: Messer BOT');
+    if(act==='knifeMidgame') addPoints(p, +1, 'Messerung während Spiel');
+    if(act==='doubleKill2nd') addPoints(p, +1, 'Direkter Doppelabschuss auf zweithöchster Stufe');
+    if(act==='doubleKill2ndRival') addPoints(p, +2, 'Direkter Doppelabschuss – Rival inkludiert');
+    if(act==='kicked') addPoints(p, +2, 'Von Randoms gekickt');
+    if(act==='leftRound') addPoints(p, -1, 'Laufende Runde verlassen');
+  });
+
+  $('#endDay').onclick = endDay;
+  $('#resetDay').onclick = ()=>{ state.day = {A:0,B:0,valid:true,validTeams:true,label: new Date().toISOString().slice(0,10)}; save(); render(); log('Tag zurückgesetzt.'); };
+  $('#invalidateRound').onclick = ()=>{ state.day.valid = false; save(); render(); log('Runde als ungültig markiert.'); };
+  $('#prevMonth').onclick = ()=>{ state.monthOffset--; render(); };
+  $('#nextMonth').onclick = ()=>{ state.monthOffset++; render(); };
+  $('#agentA').onclick = ()=>agent('A'); $('#agentB').onclick = ()=>agent('B');
+  $('#exportBtn').onclick = exportData; $('#importBtn').onclick = importData; $('#resetAll').onclick = ()=>{ if(confirm('Alles löschen?')){ localStorage.removeItem('ggstats'); location.reload(); } };
+  $('#playerAName').addEventListener('input', e=>{ state.names.A = e.target.value||'Spieler A'; save(); render(); });
+  $('#playerBName').addEventListener('input', e=>{ state.names.B = e.target.value||'Spieler B'; save(); render(); });
+  $('#dayLabel').addEventListener('input', e=>{ state.day.label = e.target.value; save(); });
+  $('#validDay').addEventListener('change', e=>{ state.day.valid = e.target.checked; save(); });
+  $('#validTeams').addEventListener('change', e=>{ state.day.validTeams = e.target.checked; save(); });
+
+  load(); ensureMonth(); render();
   </script>
 </body>
 </html>
